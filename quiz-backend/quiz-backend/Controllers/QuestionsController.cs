@@ -11,10 +11,17 @@ namespace quiz_backend.Controllers
     [ApiController]
     public class QuestionsController : ControllerBase
     {
+        readonly QuizContext context;
+        public QuestionsController(QuizContext context)
+        {
+            this.context = context;
+        }
         // POST api/values
         [HttpPost]
         public void Post([FromBody] Models.Question question)
         {
+            context.Questions.Add(question);
+            context.SaveChanges();
         }
     }
 }
