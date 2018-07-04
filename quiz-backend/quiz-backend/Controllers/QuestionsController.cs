@@ -16,7 +16,14 @@ namespace quiz_backend.Controllers
         {
             this.context = context;
         }
-        // POST api/values
+        //GET api/questions
+        [HttpGet]
+        public IEnumerable<Models.Question> Get(){
+            return context.Questions;
+        }
+
+
+        // POST api/questions
         [HttpPost]
         public void Post([FromBody] Models.Question question)
         {
