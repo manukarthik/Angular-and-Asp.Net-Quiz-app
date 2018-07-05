@@ -22,6 +22,16 @@ namespace quiz_backend.Controllers
             return context.Questions;
         }
 
+        // PUT api/values/5
+        [HttpPut("{id}")]
+        public async Task<IActionResult> Put(int id, [FromBody]Models.Question question)
+        {
+            if (id != question.ID)
+                return BadRequest();
+            context.Entry(question).State = Microsoft.EntityFrameworkCore.EntityState.Modified;
+            await context.SaveChangesAsync();
+            return Ok(question);
+        }
 
         // POST api/questions
         [HttpPost]
