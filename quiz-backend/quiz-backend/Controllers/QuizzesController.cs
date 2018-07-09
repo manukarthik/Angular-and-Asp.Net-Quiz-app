@@ -10,7 +10,8 @@ using quiz_backend.Models;
 
 namespace quiz_backend.Controllers
 {
-    [Route("api/[controller]")]
+    [Produces("application/json")]
+    [Route("api/Quizzes")]
     [ApiController]
     public class QuizzesController : ControllerBase
     {
