@@ -18,8 +18,14 @@ namespace quiz_backend.Controllers
         }
         //GET api/questions
         [HttpGet]
-        public IEnumerable<Models.Question> Get(){
+        public IEnumerable<Models.Question> Get() {
             return context.Questions;
+        }
+
+        [HttpGet("{quizId}")]
+        public IEnumerable<Models.Question> Get([FromRoute] int quizId)
+        {
+            return context.Questions.Where(q=>q.QuizId==quizId);
         }
 
         // PUT api/values/5
@@ -35,10 +41,13 @@ namespace quiz_backend.Controllers
 
         // POST api/questions
         [HttpPost]
-        public void Post([FromBody] Models.Question question)
-        {
+        public async Task<IActionResult> Post([FromBody] Models.Question question)
+        { var quiz = context.Quiz.SingleOrDefault(q => q.ID == question.QuizId);
+            if (quiz == null)
+                return NotFound();
             context.Questions.Add(question);
-            context.SaveChanges();
+            await context.SaveChangesAsync();
+            return Ok(question);
         }
     }
 }
