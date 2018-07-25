@@ -4,6 +4,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace quiz_backend.Controllers
@@ -21,7 +22,8 @@ namespace quiz_backend.Controllers
         [HttpPost]
         public async Task<IActionResult> Register([FromBody] Credentials credentials)
         {
-            var jwt = new JwtSecurityToken();
+            var user = new IdentityUser { UserName = credentials.Email, Email = credentials.Email}
+              var jwt = new JwtSecurityToken();
             return Ok(new JwtSecurityTokenHandler().WriteToken(jwt));
         }
     }
