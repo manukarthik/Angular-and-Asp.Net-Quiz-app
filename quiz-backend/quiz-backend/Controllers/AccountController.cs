@@ -19,11 +19,23 @@ namespace quiz_backend.Controllers
     [ApiController]
     public class AccountController : ControllerBase
     {
+
+        readonly UserManager<IdentityUser> userManager;
+        readonly SignInManager<IdentityUser> signInManager;
+        public AccountController(UserManager<IdentityUser> userManager, SignInManager<IdentityUser> signInManager)
+        {
+            this.userManager = userManager;
+            this.signInManager = signInManager;
+        }
         [HttpPost]
         public async Task<IActionResult> Register([FromBody] Credentials credentials)
         {
-            var user = new IdentityUser { UserName = credentials.Email, Email = credentials.Email}
-              var jwt = new JwtSecurityToken();
+            var user = new IdentityUser { UserName = credentials.Email, Email = credentials.Email };
+            var result = await userManager.CreateAsync(user, credentials.password);
+            if (!result.Succeeded)
+                return BadRequest(result.Errors);
+            await signInManager.SignInAsync(user, isPersistent: false);
+            var jwt = new JwtSecurityToken();
             return Ok(new JwtSecurityTokenHandler().WriteToken(jwt));
         }
     }
