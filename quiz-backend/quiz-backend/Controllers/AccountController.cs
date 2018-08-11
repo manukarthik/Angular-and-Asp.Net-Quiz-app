@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
+using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
@@ -37,10 +38,34 @@ namespace quiz_backend.Controllers
             if (!result.Succeeded)
                 return BadRequest(result.Errors);
             await signInManager.SignInAsync(user, isPersistent: false);
+            var claims = new Claim[]
+            {
+            new Claim(JwtRegisteredClaimNames.Sub, user.Id)
+            };
             var signingKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("this is the secret key"));
             var signingCredentials = new SigningCredentials(signingKey, SecurityAlgorithms.HmacSha256);
             var jwt = new JwtSecurityToken(signingCredentials: signingCredentials);
             return Ok(new JwtSecurityTokenHandler().WriteToken(jwt));
+        }
+        [HttpPost("login")]
+        public async Task<IActionResult> Login([FromBody] Credentials credentials)
+        {
+            var result = await signInManager.PasswordSignInAsync(credentials.Email, credentials.password, false, false);
+            if (!result.Succeeded)
+                return BadRequest();
+            var user = await userManager.FindByEmailAsync(credentials.Email);
+            return Ok(CreateToken(user));
+        }
+        string CreateToken(IdentityUser user)
+        {
+            var claims = new Claim[]
+                        {
+            new Claim(JwtRegisteredClaimNames.Sub, user.Id)
+                        };
+            var signingKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("this is the secret key"));
+            var signingCredentials = new SigningCredentials(signingKey, SecurityAlgorithms.HmacSha256);
+            var jwt = new JwtSecurityToken(signingCredentials: signingCredentials);
+            return new JwtSecurityTokenHandler().WriteToken(jwt);
         }
     }
 }
