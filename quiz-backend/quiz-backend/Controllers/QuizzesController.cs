@@ -24,8 +24,15 @@ namespace quiz_backend.Controllers
         }
 
         // GET: api/Quizzes
+        [Authorize]
         [HttpGet]
         public IEnumerable<Quiz> GetQuiz()
+        {
+            return _context.Quiz;
+        }
+
+        [HttpGet("all")]
+        public IEnumerable<Quiz> GetQuizzes()
         {
             return _context.Quiz;
         }
